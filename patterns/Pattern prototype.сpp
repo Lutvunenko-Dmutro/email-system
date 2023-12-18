@@ -1,0 +1,61 @@
+#include <iostream>
+#include <string>
+
+// Абстрактний клас для прототипу електронного листа
+class EmailPrototype {
+public:
+    virtual EmailPrototype* clone() const = 0;
+    virtual void display() const = 0;
+    virtual ~EmailPrototype() {}
+};
+
+// Клас для представлення електронного текстового листа
+class TextEmail : public EmailPrototype {
+private:
+    std::string content;
+
+public:
+    TextEmail(const std::string& text) : content(text) {}
+
+    EmailPrototype* clone() const override {
+        return new TextEmail(*this);
+    }
+
+    void display() const override {
+        std::cout << "Text Email:\n" << content << "\n";
+    }
+};
+
+// Клас для представлення електронного HTML-листа
+class HTMLEmail : public EmailPrototype {
+private:
+    std::string htmlContent;
+
+public:
+    HTMLEmail(const std::string& html) : htmlContent(html) {}
+
+    EmailPrototype* clone() const override {
+        return new HTMLEmail(*this);
+    }
+
+    void display() const override {
+        std::cout << "HTML Email:\n" << htmlContent << "\n";
+    }
+};
+
+int main() {
+    // Використання патерна Прототип
+    TextEmail textPrototype("This is a prototype text email.");
+    HTMLEmail htmlPrototype("<html><body><p>This is a prototype HTML email.</p></body></html>");
+
+    // Копіювання прототипу для створення нових листів
+    EmailPrototype* newEmail1 = textPrototype.clone();
+    newEmail1->display();
+    delete newEmail1;
+
+    EmailPrototype* newEmail2 = htmlPrototype.clone();
+    newEmail2->display();
+    delete newEmail2;
+
+    return 0;
+}

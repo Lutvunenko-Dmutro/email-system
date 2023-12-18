@@ -1,0 +1,51 @@
+#include <iostream>
+
+// Клас, який представляє програмну систему пошти
+class EmailSystem {
+private:
+    // Єдиний екземпляр класу
+    static EmailSystem* instance;
+
+    // Приватний конструктор, щоб заборонити створення більше одного екземпляра
+    EmailSystem() {
+        // Ініціалізація системи пошти
+    }
+
+public:
+    // Метод для отримання єдиного екземпляра
+    static EmailSystem* getInstance() {
+        if (!instance) {
+            instance = new EmailSystem();
+        }
+        return instance;
+    }
+
+    // Методи для роботи з системою пошти
+    void sendEmail(const std::string& sender, const std::string& recipient, const std::string& subject, const std::string& body) {
+        // Логіка відправлення листа
+        std::cout << "Email sent from " << sender << " to " << recipient << "\n";
+    }
+
+    void receiveEmail(const std::string& sender, const std::string& recipient, const std::string& subject, const std::string& body) {
+        // Логіка отримання листа
+        std::cout << "Email received from " << sender << " to " << recipient << "\n";
+    }
+
+    // Інші методи системи пошти
+};
+
+// Ініціалізація статичної змінної
+EmailSystem* EmailSystem::instance = nullptr;
+
+int main() {
+    // Використання єдиного екземпляра системи пошти
+    EmailSystem* emailSystem = EmailSystem::getInstance();
+
+    // Відправлення та отримання листів
+    emailSystem->sendEmail("user1@example.com", "user2@example.com", "Meeting", "Let's meet tomorrow at 10 AM.");
+    emailSystem->receiveEmail("user2@example.com", "user1@example.com", "Re: Meeting", "Sure, let's meet at the coffee shop.");
+
+    // Інші операції системи пошти
+
+    return 0;
+}

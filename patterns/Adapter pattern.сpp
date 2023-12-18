@@ -1,0 +1,62 @@
+#include <iostream>
+#include <string>
+
+// Інтерфейс для системи пошти
+class EmailSystem {
+public:
+    virtual void sendEmail(const std::string& sender, const std::string& recipient, const std::string& subject, const std::string& body) = 0;
+    virtual void receiveEmail(const std::string& sender, const std::string& recipient, const std::string& subject, const std::string& body) = 0;
+    virtual ~EmailSystem() {}
+};
+
+// Конкретна реалізація системи пошти
+class ConcreteEmailSystem : public EmailSystem {
+public:
+    void sendEmail(const std::string& sender, const std::string& recipient, const std::string& subject, const std::string& body) override {
+        std::cout << "Email sent from " << sender << " to " << recipient << "\n";
+    }
+
+    void receiveEmail(const std::string& sender, const std::string& recipient, const std::string& subject, const std::string& body) override {
+        std::cout << "Email received from " << sender << " to " << recipient << "\n";
+    }
+};
+
+// Інтерфейс для сторонньої бібліотеки з іншим інтерфейсом
+class ThirdPartyLibrary {
+public:
+    virtual void send(const std::string& from, const std::string& to, const std::string& text) = 0;
+    virtual void receive(const std::string& from, const std::string& to, const std::string& text) = 0;
+    virtual ~ThirdPartyLibrary() {}
+};
+
+// Адаптер для використання системи пошти в сторонній бібліотеці
+class EmailAdapter : public ThirdPartyLibrary {
+private:
+    ConcreteEmailSystem* emailSystem;
+
+public:
+    EmailAdapter(ConcreteEmailSystem* system) : emailSystem(system) {}
+
+    void send(const std::string& from, const std::string& to, const std::string& text) override {
+        emailSystem->sendEmail(from, to, "Adapted Email", text);
+    }
+
+    void receive(const std::string& from, const std::string& to, const std::string& text) override {
+        emailSystem->receiveEmail(from, to, "Adapted Email", text);
+    }
+};
+
+int main() {
+    // Використання патерна Adapter
+    ConcreteEmailSystem* concreteEmailSystem = new ConcreteEmailSystem();
+    ThirdPartyLibrary* adapter = new EmailAdapter(concreteEmailSystem);
+
+    // Використання сторонньої бібліотеки через адаптер
+    adapter->send("user1@example.com", "user2@example.com", "Hello, this is an adapted email.");
+    adapter->receive("user2@example.com", "user1@example.com", "Reply: This is the adapted response.");
+
+    delete adapter;
+    delete concreteEmailSystem;
+
+    return 0;
+}

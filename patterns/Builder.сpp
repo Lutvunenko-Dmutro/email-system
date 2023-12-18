@@ -1,0 +1,109 @@
+#include <iostream>
+#include <string>
+
+// Клас, що представляє електронний лист
+class Email {
+public:
+    std::string sender;
+    std::string recipient;
+    std::string subject;
+    std::string body;
+
+    void display() {
+        std::cout << "From: " << sender << "\n";
+        std::cout << "To: " << recipient << "\n";
+        std::cout << "Subject: " << subject << "\n";
+        std::cout << "Body: " << body << "\n";
+        std::cout << "------------------------\n";
+    }
+};
+
+// Клас для побудови електронного листа (Builder)
+class EmailBuilder {
+protected:
+    Email email;
+
+public:
+    virtual void buildSender() = 0;
+    virtual void buildRecipient() = 0;
+    virtual void buildSubject() = 0;
+    virtual void buildBody() = 0;
+
+    Email getEmail() {
+        return email;
+    }
+};
+
+// Конкретний клас побудови текстового електронного листа
+class TextEmailBuilder : public EmailBuilder {
+public:
+    void buildSender() override {
+        email.sender = "user@example.com";
+    }
+
+    void buildRecipient() override {
+        email.recipient = "recipient@example.com";
+    }
+
+    void buildSubject() override {
+        email.subject = "Sample Text Email";
+    }
+
+    void buildBody() override {
+        email.body = "This is a sample text email.";
+    }
+};
+
+// Конкретний клас побудови HTML-електронного листа
+class HTMLEmailBuilder : public EmailBuilder {
+public:
+    void buildSender() override {
+        email.sender = "user@example.com";
+    }
+
+    void buildRecipient() override {
+        email.recipient = "recipient@example.com";
+    }
+
+    void buildSubject() override {
+        email.subject = "Sample HTML Email";
+    }
+
+    void buildBody() override {
+        email.body = "<html><body><p>This is a sample HTML email.</p></body></html>";
+    }
+};
+
+// Клас для директора, який визначає порядок побудови
+class EmailDirector {
+private:
+    EmailBuilder* builder;
+
+public:
+    EmailDirector(EmailBuilder* builder) : builder(builder) {}
+
+    void construct() {
+        builder->buildSender();
+        builder->buildRecipient();
+        builder->buildSubject();
+        builder->buildBody();
+    }
+};
+
+int main() {
+    // Використання патерна Builder
+    TextEmailBuilder textEmailBuilder;
+    HTMLEmailBuilder htmlEmailBuilder;
+
+    EmailDirector textEmailDirector(&textEmailBuilder);
+    textEmailDirector.construct();
+    Email textEmail = textEmailBuilder.getEmail();
+    textEmail.display();
+
+    EmailDirector htmlEmailDirector(&htmlEmailBuilder);
+    htmlEmailDirector.construct();
+    Email htmlEmail = htmlEmailBuilder.getEmail();
+    htmlEmail.display();
+
+    return 0;
+}

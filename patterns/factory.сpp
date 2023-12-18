@@ -1,0 +1,77 @@
+#include <iostream>
+#include <string>
+
+// Абстрактний клас для представлення електронного листа
+class Email {
+public:
+    virtual void display() = 0;
+    virtual ~Email() {}
+};
+
+// Клас для представлення текстового електронного листа
+class TextEmail : public Email {
+private:
+    std::string content;
+
+public:
+    TextEmail(const std::string& text) : content(text) {}
+
+    void display() override {
+        std::cout << "Text Email:\n" << content << "\n";
+    }
+};
+
+// Клас для представлення HTML-електронного листа
+class HTMLEmail : public Email {
+private:
+    std::string htmlContent;
+
+public:
+    HTMLEmail(const std::string& html) : htmlContent(html) {}
+
+    void display() override {
+        std::cout << "HTML Email:\n" << htmlContent << "\n";
+    }
+};
+
+// Абстрактний клас для фабрики створення електронних листів
+class EmailFactory {
+public:
+    virtual Email* createEmail(const std::string& content) = 0;
+    virtual ~EmailFactory() {}
+};
+
+// Конкретна фабрика для створення текстових електронних листів
+class TextEmailFactory : public EmailFactory {
+public:
+    Email* createEmail(const std::string& content) override {
+        return new TextEmail(content);
+    }
+};
+
+// Конкретна фабрика для створення HTML-електронних листів
+class HTMLEmailFactory : public EmailFactory {
+public:
+    Email* createEmail(const std::string& content) override {
+        return new HTMLEmail(content);
+    }
+};
+
+int main() {
+    // Використання фабричного методу
+    EmailFactory* factory = new TextEmailFactory();
+    Email* textEmail = factory->createEmail("This is a text email.");
+    textEmail->display();
+
+    delete textEmail;
+    delete factory;
+
+    factory = new HTMLEmailFactory();
+    Email* htmlEmail = factory->createEmail("<html><body><p>This is an HTML email.</p></body></html>");
+    htmlEmail->display();
+
+    delete htmlEmail;
+    delete factory;
+
+    return 0;
+}

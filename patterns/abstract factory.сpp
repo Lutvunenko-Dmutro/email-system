@@ -1,0 +1,74 @@
+#include <iostream>
+#include <string>
+
+// Абстрактний клас для представлення електронного листа
+class Email {
+public:
+    virtual void display() = 0;
+    virtual ~Email() {}
+};
+
+// Клас для представлення текстового електронного листа
+class TextEmail : public Email {
+private:
+    std::string content;
+
+public:
+    TextEmail(const std::string& text) : content(text) {}
+
+    void display() override {
+        std::cout << "Text Email:\n" << content << "\n";
+    }
+};
+
+// Клас для представлення HTML-електронного листа
+class HTMLEmail : public Email {
+private:
+    std::string htmlContent;
+
+public:
+    HTMLEmail(const std::string& html) : htmlContent(html) {}
+
+    void display() override {
+        std::cout << "HTML Email:\n" << htmlContent << "\n";
+    }
+};
+
+// Абстрактний клас для фабрики створення електронних листів
+class EmailFactory {
+public:
+    virtual Email* createTextEmail(const std::string& content) = 0;
+    virtual Email* createHTMLEmail(const std::string& content) = 0;
+    virtual ~EmailFactory() {}
+};
+
+// Конкретна фабрика для створення текстових та HTML-електронних листів
+class ConcreteEmailFactory : public EmailFactory {
+public:
+    Email* createTextEmail(const std::string& content) override {
+        return new TextEmail(content);
+    }
+
+    Email* createHTMLEmail(const std::string& content) override {
+        return new HTMLEmail(content);
+    }
+};
+
+int main() {
+    // Використання абстрактної фабрики
+    EmailFactory* factory = new ConcreteEmailFactory();
+
+    // Створення текстового електронного листа
+    Email* textEmail = factory->createTextEmail("This is a text email.");
+    textEmail->display();
+    delete textEmail;
+
+    // Створення HTML-електронного листа
+    Email* htmlEmail = factory->createHTMLEmail("<html><body><p>This is an HTML email.</p></body></html>");
+    htmlEmail->display();
+    delete htmlEmail;
+
+    delete factory;
+
+    return 0;
+}
