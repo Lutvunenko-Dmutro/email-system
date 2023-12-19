@@ -1,0 +1,148 @@
+#include <iostream>
+
+// Абстрактні класи для університету
+class Student {
+public:
+    virtual void study() = 0;
+};
+
+class Professor {
+public:
+    virtual void teach() = 0;
+};
+
+class Course {
+public:
+    virtual void conduct() = 0;
+};
+
+// Конкретні класи для університету
+class TechnicalStudent : public Student {
+public:
+    void study() override {
+        std::cout << "Technical student is studying." << std::endl;
+    }
+};
+
+class TechnicalProfessor : public Professor {
+public:
+    void teach() override {
+        std::cout << "Technical professor is teaching." << std::endl;
+    }
+};
+
+class TechnicalCourse : public Course {
+public:
+    void conduct() override {
+        std::cout << "Technical course is being conducted." << std::endl;
+    }
+};
+
+// Абстрактна фабрика для університету
+class AbstractUniversityFactory {
+public:
+    virtual Student* createStudent() = 0;
+    virtual Professor* createProfessor() = 0;
+    virtual Course* createCourse() = 0;
+};
+
+// Конкретна фабрика для технічного університету
+class TechnicalUniversityFactory : public AbstractUniversityFactory {
+public:
+    Student* createStudent() override {
+        return new TechnicalStudent();
+    }
+
+    Professor* createProfessor() override {
+        return new TechnicalProfessor();
+    }
+
+    Course* createCourse() override {
+        return new TechnicalCourse();
+    }
+};
+
+// Абстрактний клас для поштового програмного забезпечення
+class Mailbox {
+public:
+    virtual void sendEmail() = 0;
+    virtual void receiveEmail() = 0;
+};
+
+// Конкретний клас для бізнес-поштового програмного забезпечення
+class BusinessMailbox : public Mailbox {
+public:
+    void sendEmail() override {
+        std::cout << "Business email is sent." << std::endl;
+    }
+
+    void receiveEmail() override {
+        std::cout << "Business email is received." << std::endl;
+    }
+};
+
+// Абстрактна фабрика для системи пошти
+class AbstractMailSystemFactory {
+public:
+    virtual Mailbox* createMailbox() = 0;
+};
+
+// Конкретна фабрика для бізнес-поштової системи
+class BusinessMailSystemFactory : public AbstractMailSystemFactory {
+public:
+    Mailbox* createMailbox() override {
+        return new BusinessMailbox();
+    }
+};
+
+// Компонент, що об'єднує університет, поштове програмне забезпечення та абстрактну фабрику
+class UniversityEmailSystem {
+public:
+    UniversityEmailSystem(AbstractUniversityFactory* universityFactory, AbstractMailSystemFactory* mailSystemFactory)
+        : student(universityFactory->createStudent()),
+          professor(universityFactory->createProfessor()),
+          course(universityFactory->createCourse()),
+          mailbox(mailSystemFactory->createMailbox()) {}
+
+    void run() {
+        student->study();
+        professor->teach();
+        course->conduct();
+        mailbox->sendEmail();
+        mailbox->receiveEmail();
+    }
+
+    ~UniversityEmailSystem() {
+        delete student;
+        delete professor;
+        delete course;
+        delete mailbox;
+    }
+
+private:
+    Student* student;
+    Professor* professor;
+    Course* course;
+    Mailbox* mailbox;
+};
+
+int main() {
+    // Використання абстрактної фабрики для технічного університету
+    AbstractUniversityFactory* universityFactory = new TechnicalUniversityFactory();
+
+    // Використання абстрактної фабрики для бізнес-поштової системи
+    AbstractMailSystemFactory* mailSystemFactory = new BusinessMailSystemFactory();
+
+    // Створення об'єкта, який об'єднує університет, поштове програмне забезпечення та абстрактну фабрику
+    UniversityEmailSystem* system = new UniversityEmailSystem(universityFactory, mailSystemFactory);
+
+    // Запуск системи
+    system->run();
+
+    // Видалення створених об'єктів
+    delete system;
+    delete universityFactory;
+    delete mailSystemFactory;
+
+    return 0;
+}
